@@ -6,15 +6,16 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class MessageController {
 
-
     @PostMapping("/messages")
     fun putMessage(@RequestBody message: String): String {
-        return MessageHolder.putMessage(message)
+        val hash = getHashString(message)
+        MyJedis.putValue(hash, message)
+        return hash
     }
 
     @GetMapping("/messages/{hash}")
     fun getMessage(@PathVariable(value = "hash") hash: String): String {
-        val message = MessageHolder.getMessage(hash) ?: throw ResourceNotFoundException()
+        val message = MyJedis.getValue(hash) ?: throw ResourceNotFoundException()
         return message
     }
 
